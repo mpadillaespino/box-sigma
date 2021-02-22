@@ -1,0 +1,378 @@
+openapi: 3.0.1
+info:
+  title: API UX Validation Customer Product Invoice V1
+  description: Se va crear la presente api de experiencia la cual valida las cuentas de ahorros y poderes del cliente dejando trazabilidad de su operación, esta operación hace referencia al ingreso del cliente al nuevo producto de factura negociable electrónica.
+  version: 1.0.0
+servers:
+  - url: /channel/ppel/v1/validation-customer-product-invoices
+x-bcp-api-type: UX
+tags:
+  - name: Validation Customer Product Invoice
+    description: Validation Customer Product Invoice Controller
+paths:
+  /company-power/validate:
+    post:
+      tags:
+        - Validation Customer Product Invoice
+      summary: Validación de los poderes del representante.
+      description: |-
+
+        ### Acerca de la funcionalidad expuesta
+        Servicio que valida que el cliente tenga los poderes necesarios para aplicar al producto.
+
+        ### Data de prueba
+        | Header    |Ejemplo|
+        |-----------|-------|
+        | Authorization | Bearer {JWT} |
+        | Request-ID | 15b25f29-4112-40e4-b86e-4dd900ac72e5 |
+        | request-date | 2019-06-01T17:15:20.509-0400 |
+        | app-code | YM |
+        | caller-name | ppel-loan-sale-campaing |
+        | Ocp-Apim-Subscription-Key| 63b9a586e67644a0bd91041abac63f23 |
+        | opn-code | 12345678 |
+        | opn-number | 00000042 |
+        | app-name | OB |
+        | agency-code | 057 |
+        | znak | 1c129eb1-c479-47bb-9c73-d263e2673026 |
+
+
+        ### Precondiciones para el consumo de esta API
+        1. Se debe guardar en la cache de redis los datos de la sesión del usuario incluido el producto seleccionado (Factura electronica).
+        2. Varios clientes no puede tener el mismo número de operación para un mismo canal.
+
+        ### Uso valido de Query Parameters
+        No Aplica
+
+        ### Variantes válidas del Payload
+        No aplica
+
+        ### Lista de valores usadas en esta version de API
+        No aplica
+
+        ### Codigos de error usados en esta version de la API
+        | Codigo | Http Status | Descripcion |
+        |--------|-----|------------------------------------------|
+        | TL0003 | 400 | Los datos proporcionados no son válidos. |
+        | TL0007 | 500 | Ocurrió un error en el servicio Externo consumido. |
+      operationId: validateCompanyPowerUsingPOST
+      x-atlas-header:
+        $ref: '#/components/schemas/CompanyPowerHeaders'
+      parameters:
+        - $ref: 'https://swaggerhub.lima.bcp.com.pe/v1/domains/BCP_Org/Atlas-Domain/1.0.0#/components/parameters/Authorization'
+        - $ref: 'https://swaggerhub.lima.bcp.com.pe/v1/domains/BCP_Org/Atlas-Domain/1.0.0#/components/parameters/Request-ID'
+        - $ref: 'https://swaggerhub.lima.bcp.com.pe/v1/domains/BCP_Org/Atlas-Domain/1.0.0#/components/parameters/request-date'
+        - $ref: 'https://swaggerhub.lima.bcp.com.pe/v1/domains/BCP_Org/Atlas-Domain/1.0.0#/components/parameters/app-code'
+        - $ref: 'https://swaggerhub.lima.bcp.com.pe/v1/domains/BCP_Org/Atlas-Domain/1.0.0#/components/parameters/caller-name'
+        - $ref: 'https://swaggerhub.lima.bcp.com.pe/v1/domains/BCP_Org/Atlas-Domain/1.0.0#/components/parameters/Ocp-Apim-Subscription-Key'
+        - $ref: 'atlas.yaml#/components/parameters/opn-code'
+        - $ref: 'atlas.yaml#/components/parameters/opn-number'
+        - $ref: 'atlas.yaml#/components/parameters/app-name'
+        - $ref: 'atlas.yaml#/components/parameters/agency-code'
+        - name: znak
+          in: header
+          description: Session id de redis (sessionMapName)
+          required: true
+          schema:
+            type: string
+            minLength: 0
+            maxLength: 200
+      responses:
+        200:
+          description: La validación de poderes se supero correctamente.
+          content:
+            application/json: {}
+        400:
+          description: Los datos proporcionados no son válidos.
+          content:
+            application/stream+json:
+              schema:
+                $ref: 'https://swaggerhub.lima.bcp.com.pe/v1/domains/BCP_Org/Atlas-Domain/1.0.0#/components/schemas/ApiException'
+            application/json;charset=UTF-8:
+              schema:
+                $ref: 'https://swaggerhub.lima.bcp.com.pe/v1/domains/BCP_Org/Atlas-Domain/1.0.0#/components/schemas/ApiException'
+        500:
+          description: Ocurrió un error en la invocación al servicio externo.
+          content:
+            application/stream+json:
+              schema:
+                $ref: 'https://swaggerhub.lima.bcp.com.pe/v1/domains/BCP_Org/Atlas-Domain/1.0.0#/components/schemas/ApiException'
+            application/json;charset=UTF-8:
+              schema:
+                $ref: 'https://swaggerhub.lima.bcp.com.pe/v1/domains/BCP_Org/Atlas-Domain/1.0.0#/components/schemas/ApiException'
+  /account/verify:
+    get:
+      tags:
+        - Validation Customer Product Invoice
+      summary: Verificación de cuentas.
+      description: |-
+
+        ### Acerca de la funcionalidad expuesta
+        Servicio que verifica que el cliente tenga cuentas para aplicar al producto  y obtiene la información de estas cuentas.
+
+        ### Data de prueba
+        | Header    |Ejemplo|
+        |-----------|-------|
+        | Authorization | Bearer {JWT} |
+        | Request-ID | 15b25f29-4112-40e4-b86e-4dd900ac72e5 |
+        | request-date | 2019-06-01T17:15:20.509-0400 |
+        | app-code | YM |
+        | caller-name | ppel-loan-sale-campaing |
+        | Ocp-Apim-Subscription-Key| 63b9a586e67644a0bd91041abac63f23 |
+        | opn-code | 12345678 |
+        | opn-number | 00000042 |
+        | app-name | OB |
+        | agency-code | 057 |
+        | znak | 1c129eb1-c479-47bb-9c73-d263e2673026 |
+
+
+        ### Precondiciones para el consumo de esta API
+        1. Se debe guardar en la cache de redis los datos de las sesion del usuario incluido el producto seleccionado (Factura electronica).
+        2. Varios clientes no puede tener el mismo número de operación para un mismo canal.
+
+        ### Uso valido de Query
+        No Aplica
+
+        ### Variantes validas del Payload
+        No aplica
+
+        ### Lista de valores usadas en esta version de API
+        No aplica
+
+        ### Codigos de error usados en esta version de la API
+        | Codigo | Http Status | Descripcion |
+        |--------|-----|------------------------------------------|
+        | TL0003 | 400 | Los datos proporcionados no son validos. |
+        | TL0007 | 500 | Ocurrio un error en el servicio externo. |
+      operationId: verifyAccountsUsingGET
+      x-atlas-header:
+        $ref: '#/components/schemas/AccountHeaders'
+      parameters:
+        - $ref: 'https://swaggerhub.lima.bcp.com.pe/v1/domains/BCP_Org/Atlas-Domain/1.0.0#/components/parameters/Authorization'
+        - $ref: 'https://swaggerhub.lima.bcp.com.pe/v1/domains/BCP_Org/Atlas-Domain/1.0.0#/components/parameters/Request-ID'
+        - $ref: 'https://swaggerhub.lima.bcp.com.pe/v1/domains/BCP_Org/Atlas-Domain/1.0.0#/components/parameters/request-date'
+        - $ref: 'https://swaggerhub.lima.bcp.com.pe/v1/domains/BCP_Org/Atlas-Domain/1.0.0#/components/parameters/app-code'
+        - $ref: 'https://swaggerhub.lima.bcp.com.pe/v1/domains/BCP_Org/Atlas-Domain/1.0.0#/components/parameters/caller-name'
+        - $ref: 'https://swaggerhub.lima.bcp.com.pe/v1/domains/BCP_Org/Atlas-Domain/1.0.0#/components/parameters/Ocp-Apim-Subscription-Key'
+        - $ref: 'atlas.yaml#/components/parameters/opn-code'
+        - $ref: 'atlas.yaml#/components/parameters/opn-number'
+        - $ref: 'atlas.yaml#/components/parameters/app-name'
+        - $ref: 'atlas.yaml#/components/parameters/agency-code'
+        - name: znak
+          in: header
+          description: Session id de redis (sessionMapName)
+          required: true
+          schema:
+            type: string
+            minLength: 0
+            maxLength: 200
+      responses:
+        200:
+          description: Se verificó las cuentas del cliente correctamente.
+          content:
+            application/stream+json:
+              schema:
+                $ref: '#/components/schemas/AccountResponse'
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/AccountResponse'
+        400:
+          description: Los datos proporcionados no son válidos.
+          content:
+            application/stream+json:
+              schema:
+                $ref: 'https://swaggerhub.lima.bcp.com.pe/v1/domains/BCP_Org/Atlas-Domain/1.0.0#/components/schemas/ApiException'
+            application/json;charset=UTF-8:
+              schema:
+                $ref: 'https://swaggerhub.lima.bcp.com.pe/v1/domains/BCP_Org/Atlas-Domain/1.0.0#/components/schemas/ApiException'
+        500:
+          description: Ocurrió un error en la invocación al servicio externo.
+          content:
+            application/stream+json:
+              schema:
+                $ref: 'https://swaggerhub.lima.bcp.com.pe/v1/domains/BCP_Org/Atlas-Domain/1.0.0#/components/schemas/ApiException'
+            application/json;charset=UTF-8:
+              schema:
+                $ref: 'https://swaggerhub.lima.bcp.com.pe/v1/domains/BCP_Org/Atlas-Domain/1.0.0#/components/schemas/ApiException'
+  /operation-number:
+    post:
+      tags:
+        - Validation Customer Product Invoice
+      summary: Creación de un número de operación.
+      description: |-
+
+        ### Acerca de la funcionalidad expuesta
+        Servicio que genera un número de operación asociado al cliente y registra la trazabilidad de solicitud del producto.
+
+        ### Data de prueba
+        | Header    |Ejemplo|
+        |-----------|-------|
+        | Authorization | Bearer {JWT} |
+        | Request-ID | 15b25f29-4112-40e4-b86e-4dd900ac72e5 |
+        | request-date | 2019-06-01T17:15:20.509-0400 |
+        | app-code | YM |
+        | caller-name | ppel-loan-sale-campaing |
+        | Ocp-Apim-Subscription-Key| 63b9a586e67644a0bd91041abac63f23 |
+        | opn-code | 12345678 |
+        | opn-number | 00000042 |
+        | app-name | OB |
+        | agency-code | 057 |
+        | znak | 1c129eb1-c479-47bb-9c73-d263e2673026 |
+
+
+        ### Precondiciones para el consumo de esta API
+        1. Se debe guardar en la cache de redis los datos de la sesion del usuario incluido el producto seleccionado (Factura electronica).
+        2. Varios clientes no puede tener el mismo número de operación para un mismo canal.
+
+        ### Uso valido de Query
+        No Aplica
+
+        ### Variantes validas del Payload
+        No aplica
+
+        ### Lista de valores usadas en esta version de API
+        No aplica
+
+        ### Codigos de error usados en esta version de la API
+        | Codigo | Http Status | Descripcion |
+        |--------|-----|------------------------------------------|
+        | TL0003 | 400 | Los datos proporcionados no son validos. |
+        | TL0007 | 500 | Ocurrió un error en la invocación al servicio externo. |
+      operationId: generateOperationNumberUsingPOST
+      x-atlas-header:
+        $ref: '#/components/schemas/OperationNumberHeaders'
+      parameters:
+        - $ref: 'https://swaggerhub.lima.bcp.com.pe/v1/domains/BCP_Org/Atlas-Domain/1.0.0#/components/parameters/Authorization'
+        - $ref: 'https://swaggerhub.lima.bcp.com.pe/v1/domains/BCP_Org/Atlas-Domain/1.0.0#/components/parameters/Request-ID'
+        - $ref: 'https://swaggerhub.lima.bcp.com.pe/v1/domains/BCP_Org/Atlas-Domain/1.0.0#/components/parameters/request-date'
+        - $ref: 'https://swaggerhub.lima.bcp.com.pe/v1/domains/BCP_Org/Atlas-Domain/1.0.0#/components/parameters/app-code'
+        - $ref: 'https://swaggerhub.lima.bcp.com.pe/v1/domains/BCP_Org/Atlas-Domain/1.0.0#/components/parameters/caller-name'
+        - $ref: 'https://swaggerhub.lima.bcp.com.pe/v1/domains/BCP_Org/Atlas-Domain/1.0.0#/components/parameters/Ocp-Apim-Subscription-Key'
+        - $ref: 'atlas.yaml#/components/parameters/opn-code'
+        - $ref: 'atlas.yaml#/components/parameters/opn-number'
+        - $ref: 'atlas.yaml#/components/parameters/app-name'
+        - $ref: 'atlas.yaml#/components/parameters/agency-code'
+        - name: znak
+          in: header
+          description: Session id de redis (sessionMapName)
+          required: true
+          schema:
+            type: string
+            minLength: 0
+            maxLength: 200
+      requestBody:
+        description: Entrada del Servicio
+        content:
+          application/stream+json:
+            schema:
+              $ref: '#/components/schemas/AccountRequest'
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/AccountRequest'
+        required: true
+      responses:
+        200:
+          description: Se generó el número de operación correctamente.
+          content:
+            application/json: {}
+        400:
+          description: Los datos proporcionados no son validos.
+          content:
+            application/stream+json:
+              schema:
+                $ref: 'https://swaggerhub.lima.bcp.com.pe/v1/domains/BCP_Org/Atlas-Domain/1.0.0#/components/schemas/ApiException'
+            application/json;charset=UTF-8:
+              schema:
+                $ref: 'https://swaggerhub.lima.bcp.com.pe/v1/domains/BCP_Org/Atlas-Domain/1.0.0#/components/schemas/ApiException'
+        500:
+          description: Ocurrió un error en la invocación al servicio externo.
+          content:
+            application/stream+json:
+              schema:
+                $ref: 'https://swaggerhub.lima.bcp.com.pe/v1/domains/BCP_Org/Atlas-Domain/1.0.0#/components/schemas/ApiException'
+            application/json;charset=UTF-8:
+              schema:
+                $ref: 'https://swaggerhub.lima.bcp.com.pe/v1/domains/BCP_Org/Atlas-Domain/1.0.0#/components/schemas/ApiException'
+components:
+  schemas:
+    CompanyPowerHeaders:
+      type: object
+    AccountHeaders:
+      type: object
+    AccountCache:
+      type: object
+      properties:
+        key:
+          type: string
+          maxLength: 200
+          minLength: 0
+          description: Key de la cuenta
+          example: b60b6f44-bb02-4b09-8049-5a29e5069240
+        formattedNumber:
+          type: string
+          maxLength: 22
+          minLength: 0
+          description: Número de cuenta comercial editado
+          example: 194-1492657-0-41
+        formattedNumberMask:
+          type: string
+          maxLength: 22
+          minLength: 0
+          description: Número de cuenta oculto
+          example: 194-******7-0-41
+        familyCode:
+          type: string
+          maxLength: 3
+          minLength: 0
+          description: Código de familia según clasificación estandar
+          example: 004
+        productCode:
+          type: string
+          maxLength: 3
+          minLength: 0
+          description: codigo de producto
+          example: 016
+        productDescription:
+          type: string
+          maxLength: 200
+          minLength: 0
+          description: Nombre del producto
+          pattern: ^[A-Za-z ]*$
+          example: Corriente Soles
+        currencyCode:
+          type: string
+          minLength: 3
+          maxLength: 4
+          description: Código de moneda
+          example: PEN
+        statusCode:
+          type: string
+          maxLength: 4
+          minLength: 0
+          description: Estado de la cuenta
+          example: 00
+    AccountRequest:
+      type: object
+      properties:
+        source:
+          type: string
+          maxLength: 200
+          minLength: 0
+          description: Código que indica de que página proviene
+        validationStatus:
+          type: string
+          maxLength: 200
+          minLength: 0
+          description: Resultado de la validación
+    AccountResponse:
+      type: object
+      properties:
+        accountCache:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountCache'
+        hasAccount:
+          type: boolean
+          example: true
+          description: Indica si el cliente tiene cuentas
+    OperationNumberHeaders:
+      type: object
